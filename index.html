@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gelati</title>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+    <script>$(document).on("submit", "form", function(e)
+{
+    e.preventDefault();
+});
+
+$("#invia").click(function() {
+    $("#newpost").toggle();
+});
+
+function richiesta()
+{
+	$('#dati').remove();
+
+	$.ajax(
+	{
+		type: "POST",
+		url: "database.php",
+		data: { richiesta : "elenco" },
+		success: function(data)
+		{
+			console.log(data);
+			var dati = JSON.parse(data);
+      
+
+			$("body").append(
+		        "<table id='dati'>" +
+		          "<tr style='height:40px;'>" +
+		          "	<th>ID</th>" +
+		          "	<th>Nome</th>" +
+		          "	<th>Prezzo</th>" +
+		          "	<th>Produttore</th>" +
+		          "</tr>" +
+		        "</table>"
+		    );
+
+			for (var i = 0; i < dati.length; i++)
+			{
+				$("#dati").append(
+					"<tr>" +
+					"	<td>" + dati[i][0] + "</td>" +
+					"	<td>" + dati[i][1] + "</td>" +
+					"	<td class='hide' style='display: none;'>" + dati[i][2] + "</td>" +
+					"	<td class='hide' style='display: none;'>" + dati[i][3] + "</td>" +
+					"</tr>"
+				);
+			}
+		}
+	});
+}
+
+$(document).on("mouseenter", "tr", function() {
+	$(".hide").css("display", "none");
+	$(this)[0].firstElementChild.nextElementSibling.nextElementSibling.style.display = "table-cell";
+	$(this)[0].firstElementChild.nextElementSibling.nextElementSibling.nextElementSibling.style.display = "table-cell";
+});
+
+function aggiungi()
+{
+	var nome = $('#nome').val();
+	var prezzo = $('#prezzo').val();
+	var produttore = $('#produttore').val();
+
+	$.ajax(
+	{
+		type: "POST",
+		url: "database.php",
+		data:
+		{
+			richiesta : "inserisci",
+			nome : nome,
+			prezzo : prezzo,
+			produttore : produttore
+		},
+		success: function(data)
+		{
+			console.log(data);
+			$('#popup').toggle();
+		}
+
+	});
+	$('input').val('');
+
+}
+
+function annulla(){
+	$('#popup').toggle();
+	$('input').val('');
+}</script>
+</head>
+<body>
+    <div class="div1">
+        <br>
+        <h2 class="tith2">Gelati</h2>
+      </div><br>
+      <div id="popup">
+            <a href="#" class="close" onclick="$('#popup').toggle();"></a>
+            <h1 id="ins" class="tith3">Inserisci</h1>
+            <div id="inserimento">
+                <input type="text" id="nome" placeholder="Nome" /><br>
+                <input type="text" id="prezzo" placeholder="Prezzo" /><br>
+                <input type="text" id="produttore" placeholder="Produttore" /><br><br>
+                <button id="invia" onclick="aggiungi();">AGGIUNGI</button>
+                <button onclick="annulla();">ANNULLA</button>
+            </div>
+      </div>
+      <div class="scelta">
+      <button class="button" onclick="richiesta();" id="do">Lista Gelati</button>
+      <button class="button" onclick="$('#popup').toggle();" id="di">Aggiungi Gelato</button>
+    </div>
+</body>
+</html>
